@@ -19,6 +19,8 @@ Typed nested config that can be overwritten by environment variables.
 userConfig.ts
 
 ```ts
+import { UserConfig } from "./src/lib/types.ts";
+
 export userConfig: UserConfig {
   email: "email@email.email",
   password: {
@@ -47,12 +49,15 @@ userConfig.ts
 
 ### Sources files
 
-src/types.ts
+src/lib/types.ts
 
 ```ts
 export interface UserConfig {
   email: number;
-  password: string;
+  password: {
+    first: string;
+    second: string;
+  };
 }
 
 export interface FullConfig extends UserConfig {
@@ -60,19 +65,12 @@ export interface FullConfig extends UserConfig {
 }
 ```
 
-src/config.ts
+src/lib/config.ts
 
 ```ts
-import { userConfig } from "../userConfig";
+import { FullConfig, UserConfig } from "types.ts";
 
-export interface UserConfig {
-  email: number;
-  password: string;
-}
-
-export interface FullConfig extends UserConfig {
-  url: string;
-}
+import { userConfig } from "../../userConfig";
 
 export const config = createConfig<FullConfig>(
   {
