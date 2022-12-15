@@ -1,0 +1,22 @@
+{
+  "printWidth": 80,
+  "trailingComma": "all",
+  "singleQuote": false ,
+  "arrowParens": "avoid",
+  "importOrder": [    
+    "<THIRD_PARTY_MODULES>", 
+    "^src/(.*)$", 
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "overrides": [
+    {
+      "files": ["src/**/*.ts", "test/**/*.ts"],
+      "options": {
+        "parser": "babel-ts"
+      }
+    }
+  ]
+}
+

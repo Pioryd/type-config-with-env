@@ -1,0 +1,19 @@
+# source
+**/*.ts
+*.ts
+
+# definitions
+!**/*.d.ts
+!*.d.ts
+
+# configuration
+.eslintrc.js
+.eslintignore
+.prettierrc
+.prettierignore
+package-lock.json
+tsconfig.build.json
+tsconfig.json
+tsconfig.spec.json
+tslint.json
+*.tsbuildinfo
