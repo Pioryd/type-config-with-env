@@ -1,9 +1,5 @@
-import * as dotenv from "dotenv";
 import flatten from "flat";
 import _ from "lodash";
-
-// see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-dotenv.config();
 
 interface Options {
   preText?: string;
