@@ -6,10 +6,24 @@ interface Options {
   delimiter?: string;
 }
 
+interface Props<T extends { nodeEnv?: NodeEnvModes<T> }> {
+  userConfig: T;
+  options: Options;
+}
+
+type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
+};
+
+export type NodeEnvModes<T extends object> =
+  | Record<string, Omit<DeepPartial<T>, "nodeEnv">>
+  | undefined;
+
 const DEFAULT_OPTIONS: Options = {
   preText: "conf_",
   delimiter: "_",
 };
+
 /**
  *
  * @param initialData - default config data
@@ -17,19 +31,31 @@ const DEFAULT_OPTIONS: Options = {
  *   preText - default "conf_"
  *   delimiter - default "_"
  */
-export function createConfig<T extends {}>(
-  initialData: T,
-  options: Options = {},
-) {
+export function mergeUserConfigWithEnv<
+  T extends { nodeEnv?: NodeEnvModes<T> },
+>({ userConfig, options }: Props<T>): T {
   const mergedOptions: Options = _.merge(DEFAULT_OPTIONS, options);
 
-  const config: T = _.cloneDeep(initialData);
+  let clonedUserConfig: T = _.cloneDeep(userConfig);
 
-  const flattenConfig: Record<string, unknown> = flatten(config, {
+  const { NODE_ENV } = process.env;
+
+  if (
+    NODE_ENV &&
+    clonedUserConfig.nodeEnv &&
+    clonedUserConfig.nodeEnv[NODE_ENV]
+  ) {
+    clonedUserConfig = _.merge(
+      clonedUserConfig,
+      clonedUserConfig.nodeEnv[NODE_ENV],
+    );
+  }
+
+  const flattenUserConfig: Record<string, unknown> = flatten(clonedUserConfig, {
     delimiter: mergedOptions.delimiter,
   });
 
-  const possibleEnv: string[] = Object.keys(flattenConfig).map(
+  const possibleEnv: string[] = Object.keys(flattenUserConfig).map(
     configFlatKey => mergedOptions.preText + configFlatKey,
   );
 
@@ -37,27 +63,40 @@ export function createConfig<T extends {}>(
     possibleEnv.includes(envKey),
   );
 
-  const flattenNewObjectOfEnv: any = {};
+  const flattenUserConfigOverriddenByEnv: Record<string, unknown> =
+    _.cloneDeep(flattenUserConfig);
+
   for (const env of foundEnv) {
     const key = env.replace(mergedOptions?.preText || "", "");
     const value = process.env[env];
 
     if (!value) continue;
 
-    if (typeof flattenConfig[key] === "number") {
-      flattenNewObjectOfEnv[key] = Number(value);
-    } else if (typeof flattenConfig[key] === "boolean") {
-      flattenNewObjectOfEnv[key] =
-        value.toLowerCase() === "true" ? true : false;
-    } else {
-      flattenNewObjectOfEnv[key] = value;
+    switch (typeof flattenUserConfig[key]) {
+      case "string":
+        flattenUserConfigOverriddenByEnv[key] = value;
+        break;
+      case "number":
+        flattenUserConfigOverriddenByEnv[key] = Number(value);
+        break;
+      case "boolean":
+        flattenUserConfigOverriddenByEnv[key] =
+          value.toLowerCase() === "true" ? true : false;
+        break;
+      default:
+        throw new Error(
+          "UserConfig support only support types [string, number, boolean]." +
+            "\nAny other types create in FullConfig",
+        );
     }
   }
-  const unflattenNewObjectOfEnv: T = flatten.unflatten(flattenNewObjectOfEnv, {
-    delimiter: "_",
-  });
 
-  const mergedConfig = _.merge(config, unflattenNewObjectOfEnv);
+  const unflattenUserConfigOverriddenByEnv: T = flatten.unflatten(
+    flattenUserConfigOverriddenByEnv,
+    { delimiter: mergedOptions.delimiter },
+  );
 
-  return mergedConfig;
+  delete unflattenUserConfigOverriddenByEnv.nodeEnv;
+
+  return unflattenUserConfigOverriddenByEnv;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@pioryd/type-config-with-env",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Typed nested config that can be overwritten by environment variables",
   "keywords": [
     "nested",
