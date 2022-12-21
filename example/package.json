@@ -1,0 +1,16 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "npx tsc && NODE_ENV=production node dist/example/src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@pioryd/type-config-with-env": "^1.1.6",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.3"
+  }
+}
