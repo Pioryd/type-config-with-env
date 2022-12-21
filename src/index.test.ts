@@ -123,7 +123,7 @@ describe("Test config", () => {
       });
       expect(userConfigWithEnv).toStrictEqual(
         _.merge(
-          userConfigWithNodeEnv,
+          _.omit(userConfigWithNodeEnv, "nodeEnv"),
           userConfigWithNodeEnv.nodeEnv.production,
         ),
       );
