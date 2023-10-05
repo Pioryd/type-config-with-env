@@ -17,7 +17,7 @@ Typed nested config that can be overwritten by environment variables.
 
 ## !!! Important
 
-You must load environment variables on Your. For example: [dotenv](https://www.npmjs.com/package/dotenv) or [cross-env](https://www.npmjs.com/package/cross-env)
+You must load environment variables on Your own. For example: [dotenv](https://www.npmjs.com/package/dotenv) or [cross-env](https://www.npmjs.com/package/cross-env)
 
 Note: dotenv must be runned before all other imports
 

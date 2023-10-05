@@ -4,9 +4,9 @@
 
 ```sh
 # npm
-npm install @pioryd/type-config-with-env
+npm install
 # yarn
-yarn add @pioryd/type-config-with-env
+yarn add
 ```
 
 ## Run
